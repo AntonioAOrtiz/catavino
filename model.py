@@ -60,16 +60,15 @@ class User(db.Model):
     lastname1 = db.Column(db.String(80), unique=True, nullable=False)
     lastname2 = db.Column(db.String(80), unique=True, nullable=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    
-    # se puede declarar la relación en ambos lados usando backref
-    # si se usara back_populates es necesario declararla en ambos lados
-    # user = db.relationship("Owner", backref=db.backref("user", uselist=False))
 
     # from praetorian example
     password = db.Column(db.Text)
     # M:N relationship
     roles = db.relationship('Role', secondary=roles_users)
     is_active = db.Column(db.Boolean, default=True, server_default="true")
+    
+    wine = db.relationship("Points", back_populates="user")
+    posts = db.relationship('Post', backref='user', lazy=True)
 
     # this enable this entity as user entity in praetorian
     @property
@@ -143,7 +142,7 @@ class Role(db.Model):
     name = db.Column(db.String(80), unique=False, nullable=False)
 
     def __repr__(self):
-        return f"{self.name}>"
+        return f"<{self.name}>"
 
 
 class Wine(db.Model):
@@ -160,16 +159,54 @@ class Wine(db.Model):
     description = db.Column(db.Text)
     price = db.Column(db.Decimal(8,2), unique=False, nullable=True)
     points = db.Column(db.Decimal(1,1), unique=False, nullable=True)
+    
+    user = db.relationship("Points", back_populates="wine")
+    posts = db.relationship('Post', backref='wine', lazy=True)
 
     
     
     def __repr__(self):
-        return f"{self.name}>"
-
-
+        return f"<{self.name}>"
 
 
 class Wine_type(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=False, nullable=False)
+    wine_id = db.Column(db.Integer, db.ForeignKey('wine.id'), nullable=False)
+
+    def __repr__(self):
+        return f"<{self.name}>"
+
+
+class Wine_winery(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
-    wine_id = db.Column(db.Integer, db.ForeignKey('wine.id'))
+    wine_id = db.Column(db.Integer, db.ForeignKey('wine.id'), nullable=False)
+
+    def __repr__(self):
+        return f"<{self.name}>"
+
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    wine_id = db.Column(db.Integer, db.ForeignKey('wine.id'), nullable=False)
+    content = db.Column(db.Text)
+    publish_date = db.Column(db.DateTime())
+
+    def __repr__(self):
+        return f"<{self.content}>"
+
+
+class Points(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    points = db.Column(db.Decimal(1,1), unique=False, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    wine_id = db.Column(db.Integer, db.ForeignKey('wine.id'), nullable=False)
+
+    user = db.relationship("User", back_populates="wines")
+    wine = db.relationship("Wine", back_populates="users")
+
+
+    def __repr__(self):
+        return f"<{self.points}>"
