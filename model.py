@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from marshmallow_sqlalchemy import schema,fields
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema,fields
 from sqlalchemy import true
 from sqlalchemy_utils import database_exists
 from flask_restx import fields as restx_fields
@@ -210,3 +210,95 @@ class Points(db.Model):
 
     def __repr__(self):
         return f"<{self.points}>"
+
+
+# Marshmallow schemas definition
+class SchemaDocSwagger(SQLAlchemyAutoSchema):
+    @staticmethod
+    def transport_field_class(field, api, nested):
+        if "String" in str(type(field)):
+            return restx_fields.String
+        if "Boolean" in str(type(field)):
+            return restx_fields.Boolean
+        if nested:
+            return restx_fields.Integer
+        if "Nested" in str(type(field)):
+            return restx_fields.List(restx_fields.Nested(field.schema.get_model(api, nested=True)))
+        if "RelatedList" in str(type(field)):
+            return restx_fields.List(restx_fields.Integer)
+
+        return restx_fields.Integer
+
+    def get_model(self, api, nested=False):
+        my_fields = {field_name: self.transport_field_class(field, api, nested)
+                     for field_name, field in self.fields.items()}
+        return api.model(self.__class__.__name__, my_fields)
+
+
+class UserSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
+    class Meta:
+        # model class for the schema
+        model = User
+        include_relationships = True
+        load_instance = True
+        sqla_session = db.session
+
+    roles = fields.Nested(lambda: RoleSchema(exclude=("users", )), many=True)
+    wines = fields.Nested(lambda: WineSchema(exclude=("wines", )), many=True)
+
+
+class RoleSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
+    class Meta:
+        model = Role
+        include_relationships = True
+        load_instance = True
+        sqla_session = db.session
+
+    users = fields.Nested(UserSchema(exclude=("roles", )), many=True)
+
+
+class WineSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
+    class Meta:
+        model = Wine
+        include_relationships = True
+        load_instance = True
+        sqla_session = db.session
+
+    users = fields.Nested(UserSchema(exclude=("users", )), many=True)
+
+
+class Wine_typeSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
+    class Meta:
+        model = Wine_type
+        include_relationships = True
+        load_instance = True
+        sqla_session = db.session
+
+
+
+class Wine_winerySchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
+    class Meta:
+        model = Wine_winery
+        include_relationships = True
+        load_instance = True
+        sqla_session = db.session
+
+
+class PostSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
+    class Meta:
+        model = Post
+        include_relationships = True
+        load_instance = True
+        sqla_session = db.session
+
+
+class PointsSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
+    class Meta:
+        model = Points
+        include_relationships = True
+        load_instance = True
+        sqla_session = db.session
+
+    users = fields.Nested(UserSchema(exclude=("users", )), many=True)
+    wines = fields.Nested(lambda: WineSchema(exclude=("wines", )), many=True)
+
