@@ -34,7 +34,22 @@ def seed_db(app, guard):
     with app.app_context():
         # lists of model objects for db seed
         # commit changes in database
+        roles = [
+            Role(id = 1,nombre="admin"),
+            Role(id = 2,nombre="usuario")
+        ]
         
+        users = [
+            User(id=1,
+            username="ToniCaswepss",
+            name="Antonio",
+            lastname1="Ortiz",
+            lastname2="García",
+            email="antonioortiz561@gmail.com",
+            password="pestillo123",
+            roles=roles[0],
+            images="static/images/imagen1.jpg")
+        ]
         
         
         db.session.commit()
@@ -60,6 +75,7 @@ class User(db.Model):
     lastname1 = db.Column(db.String(80), unique=True, nullable=False)
     lastname2 = db.Column(db.String(80), unique=True, nullable=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    images = db.Column(db.String(80),unique=False, nullable=True)
 
     # from praetorian example
     password = db.Column(db.Text)
@@ -244,7 +260,7 @@ class UserSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
         sqla_session = db.session
 
     roles = fields.Nested(lambda: RoleSchema(exclude=("users", )), many=True)
-    wines = fields.Nested(lambda: WineSchema(exclude=("wines", )), many=True)
+    wines = fields.Nested(lambda: WineSchema(exclude=("users", )), many=True)
 
 
 class RoleSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
@@ -264,7 +280,7 @@ class WineSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
         load_instance = True
         sqla_session = db.session
 
-    users = fields.Nested(UserSchema(exclude=("users", )), many=True)
+    users = fields.Nested(UserSchema(exclude=("wines", )), many=True)
 
 
 class Wine_typeSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
