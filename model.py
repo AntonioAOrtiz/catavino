@@ -36,7 +36,7 @@ def seed_db(app, guard):
         # commit changes in database
         roles = [
             Role(id = 1,nombre="admin"),
-            Role(id = 2,nombre="usuario")
+            Role(id = 2,nombre="user")
         ]
         
         users = [
@@ -165,7 +165,7 @@ class Wine(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     winery = db.Column(db.String(80), unique=False, nullable=False)
-    denominacion_origen = db.Column(db.String(80), unique=False, nullable=True)
+    appellation_origin = db.Column(db.String(80), unique=False, nullable=True)
     year = db.Column(db.Decimal(4), unique=False, nullable=True)
     country = db.Column(db.String(80), unique=False, nullable=True)
     type = db.Column(db.String(80), unique=False, nullable=False)
@@ -316,5 +316,5 @@ class PointsSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
         sqla_session = db.session
 
     users = fields.Nested(UserSchema(exclude=("users", )), many=True)
-    wines = fields.Nested(lambda: WineSchema(exclude=("wines", )), many=True)
+    wines = fields.Nested(WineSchema(exclude=("wines", )), many=True)
 
