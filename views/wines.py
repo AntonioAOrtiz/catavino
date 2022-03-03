@@ -59,3 +59,15 @@ class WineListController(Resource):
         return WineSchema().dump(wine), 201
 
 
+@api_wine.route("/wine_points")
+class WinePointsListController(Resource):
+    @flask_praetorian.auth_required
+    def get(self):
+        # using custom SQL
+        statement = text("""
+            select wine.name as name, avg(points.points) as avg
+            from wine join on points.wine_id = wine.id
+            group by wine.id
+            """)
+        result = db.session.execute(statement)
+        return jsonify({r['name']: r['avg'] for r in result})
