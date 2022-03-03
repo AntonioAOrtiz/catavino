@@ -57,3 +57,4 @@ class PointsListController(Resource):
         db.session.add(Points)
         db.session.commit()
         return PointsSchema().dump(points), 201
+

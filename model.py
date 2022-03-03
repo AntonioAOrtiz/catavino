@@ -46,9 +46,37 @@ def seed_db(app, guard):
             lastname1="Ortiz",
             lastname2="García",
             email="antonioortiz561@gmail.com",
-            password="pestillo123",
+            password="pestillo",
             roles=roles[0],
-            images="static/images/imagen1.jpg")
+            ),
+            User(id=2,
+            username="Tulkas72",
+            name="José Manuel",
+            lastname1="Sánchez",
+            lastname2="Alvarez",
+            email="tulkas72@gmail.com",
+            password="pestillo123",
+            roles=roles[1],
+            )
+        ]
+
+        wines = [
+            Wine(id = 1,
+                name = "Tío Pepe",
+                winery = "González Byass",
+                appellation_origin = "Jerez, Xérès, Sherry",
+                country = "España",
+                type = "Espirituoso",
+                aging = "Cuatro años",
+                grapes = "Palomino Fino",
+                alcohol = "15",
+                description = "Vino 100% procedente de uva Palomino Fino, de crianza biológica y que como mínimo reposa 4 años en bota de roble americano siguiendo el sistema tradicional de criaderas y solera.",
+                price = 6.99
+            )]
+        
+        points = [
+            Points(id = 1,
+            )
         ]
         
         
@@ -75,7 +103,7 @@ class User(db.Model):
     lastname1 = db.Column(db.String(80), unique=True, nullable=False)
     lastname2 = db.Column(db.String(80), unique=True, nullable=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    images = db.Column(db.String(80),unique=False, nullable=True)
+    
 
     # from praetorian example
     password = db.Column(db.Text)

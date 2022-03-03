@@ -57,3 +57,5 @@ class postListController(Resource):
         db.session.add(post)
         db.session.commit()
         return PostSchema().dump(post), 201
+
+
