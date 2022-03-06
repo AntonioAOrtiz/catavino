@@ -76,9 +76,25 @@ def seed_db(app, guard):
         
         points = [
             Points(id = 1,
+            points = 8,
+            user_id = 1,
+            wine_id = 1
+            ),
+            Points(id = 2,
+            point = 7.5,
+            user_id = 2,
+            wine_id = 1
             )
         ]
         
+        for rol in roles:
+            db.session.add(rol)        
+        for user in users:
+            db.session.add(user)
+        for wine in wines:
+            db.session.add(wine)
+        for point in points:
+            db.session.add(point)
         
         db.session.commit()
 
