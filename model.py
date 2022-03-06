@@ -210,15 +210,15 @@ class Wine(db.Model):
     name = db.Column(db.String(80), unique=True, nullable=False)
     winery = db.Column(db.String(80), unique=False, nullable=False)
     appellation_origin = db.Column(db.String(80), unique=False, nullable=True)
-    year = db.Column(db.Decimal(4), unique=False, nullable=True)
+    year = db.Column(db.Numeric(4), unique=False, nullable=True)
     country = db.Column(db.String(80), unique=False, nullable=True)
     type = db.Column(db.String(80), unique=False, nullable=False)
     aging = db.Column(db.String(80), unique=False, nullable=True)
     grapes = db.Column(db.String(80), unique=False, nullable=True)
-    alcohol = db.Column(db.Decimal(3,1), unique=False, nullable=True)
+    alcohol = db.Column(db.Numeric(3,1), unique=False, nullable=True)
     description = db.Column(db.Text)
-    price = db.Column(db.Decimal(8,2), unique=False, nullable=True)
-    points = db.Column(db.Decimal(1,1), unique=False, nullable=True)
+    price = db.Column(db.Numeric(8,2), unique=False, nullable=True)
+    points = db.Column(db.Numeric(1,1), unique=False, nullable=True)
     
     user = db.relationship("Points", back_populates="wine")
     posts = db.relationship('Post', backref='wine', lazy=True)
@@ -260,7 +260,7 @@ class Post(db.Model):
 
 class Points(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    points = db.Column(db.Decimal(1,1), unique=False, nullable=True)
+    points = db.Column(db.Numeric(1,1), unique=False, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     wine_id = db.Column(db.Integer, db.ForeignKey('wine.id'), nullable=False)
 
