@@ -35,8 +35,8 @@ def seed_db(app, guard):
         # lists of model objects for db seed
         # commit changes in database
         roles = [
-            Role(id = 1,nombre="admin"),
-            Role(id = 2,nombre="user")
+            Role(id = 1,name="admin"),
+            Role(id = 2,name="user")
         ]
         
         users = [
@@ -127,7 +127,7 @@ class User(db.Model):
     roles = db.relationship('Role', secondary=roles_users)
     is_active = db.Column(db.Boolean, default=True, server_default="true")
     
-    wine = db.relationship("Points", back_populates="user")
+    wine = db.relationship("Points", backref="user")
     posts = db.relationship('Post', backref='user', lazy=True)
 
     # this enable this entity as user entity in praetorian
@@ -154,16 +154,16 @@ class User(db.Model):
         #     return []
         return [role.name for role in self.roles]
 
-    @property
+    """@property
     def password(self):
-        """
+        
         *Required Attribute or Property*
         flask-praetorian requires that the user class has a ``password`` instance
         attribute or property that provides the hashed password assigned to the user
         instance
-        """
+        
 
-        return self.password
+        return self.password"""
 
     @classmethod
     def lookup(cls, username):
@@ -220,7 +220,7 @@ class Wine(db.Model):
     price = db.Column(db.Numeric(8,2), unique=False, nullable=True)
     points = db.Column(db.Numeric(1,1), unique=False, nullable=True)
     
-    user = db.relationship("Points", back_populates="wine")
+    
     posts = db.relationship('Post', backref='wine', lazy=True)
 
     
@@ -264,9 +264,7 @@ class Points(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     wine_id = db.Column(db.Integer, db.ForeignKey('wine.id'), nullable=False)
 
-    user = db.relationship("User", back_populates="wines")
-    wine = db.relationship("Wine", back_populates="users")
-
+    
 
     def __repr__(self):
         return f"<{self.points}>"
@@ -295,7 +293,7 @@ class SchemaDocSwagger(SQLAlchemyAutoSchema):
         return api.model(self.__class__.__name__, my_fields)
 
 
-class UserSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
+class UserSchema(SchemaDocSwagger):
     class Meta:
         # model class for the schema
         model = User
@@ -307,7 +305,7 @@ class UserSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
     wines = fields.Nested(lambda: WineSchema(exclude=("users", )), many=True)
 
 
-class RoleSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
+class RoleSchema( SchemaDocSwagger):
     class Meta:
         model = Role
         include_relationships = True
@@ -317,7 +315,7 @@ class RoleSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
     users = fields.Nested(UserSchema(exclude=("roles", )), many=True)
 
 
-class WineSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
+class WineSchema( SchemaDocSwagger):
     class Meta:
         model = Wine
         include_relationships = True
@@ -327,7 +325,7 @@ class WineSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
     users = fields.Nested(UserSchema(exclude=("wines", )), many=True)
 
 
-class Wine_typeSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
+class Wine_typeSchema(SchemaDocSwagger):
     class Meta:
         model = Wine_type
         include_relationships = True
@@ -336,7 +334,7 @@ class Wine_typeSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
 
 
 
-class Wine_winerySchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
+class Wine_winerySchema(SchemaDocSwagger):
     class Meta:
         model = Wine_winery
         include_relationships = True
@@ -344,7 +342,7 @@ class Wine_winerySchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
         sqla_session = db.session
 
 
-class PostSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
+class PostSchema(SchemaDocSwagger):
     class Meta:
         model = Post
         include_relationships = True
@@ -352,13 +350,13 @@ class PostSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
         sqla_session = db.session
 
 
-class PointsSchema(SQLAlchemyAutoSchema, SchemaDocSwagger):
+class PointsSchema(SchemaDocSwagger):
     class Meta:
         model = Points
         include_relationships = True
         load_instance = True
         sqla_session = db.session
 
-    users = fields.Nested(UserSchema(exclude=("users", )), many=True)
-    wines = fields.Nested(WineSchema(exclude=("wines", )), many=True)
+    
+    
 

@@ -5,7 +5,7 @@ import os
 
 ###
 # database configuration
-SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:root@localhost:3306/catavino'
+SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.abspath(os.curdir)}/flask.db"
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 ###

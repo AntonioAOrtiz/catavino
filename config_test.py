@@ -5,7 +5,7 @@ App configuration
 ###
 # database configuration
 TESTING = True
-SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:root@localhost:3306/catavino_memory'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 ###
