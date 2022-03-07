@@ -36,7 +36,7 @@ def seed_db(app, guard):
         # commit changes in database
         roles = [
             Role(id = 1,name="admin"),
-            Role(id = 2,name="user")
+            Role(id = 2,name="user"),
         ]
         
         users = [
